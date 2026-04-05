@@ -4,6 +4,8 @@ from decouple import config
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+AUTH_USER_MODEL = 'users.User'
+
 SECRET_KEY = config('SECRET_KEY', default='change-me-in-production')
 
 DEBUG = config('DEBUG', default=True, cast=bool)
@@ -21,6 +23,13 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders',
+    'channels',
+    # Local
+    'apps.users.apps.UsersConfig',
+    'apps.menu.apps.MenuConfig',
+    'apps.tables.apps.TablesConfig',
+    'apps.cart.apps.CartConfig',
+    'apps.orders.apps.OrdersConfig',
 ]
 
 MIDDLEWARE = [
