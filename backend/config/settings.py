@@ -114,3 +114,15 @@ CORS_ALLOWED_ORIGINS = config(
     default='http://localhost:8081',
     cast=lambda v: [s.strip() for s in v.split(',')],
 )
+
+# Channels
+ASGI_APPLICATION = 'config.asgi.application'
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            'hosts': [(config('REDIS_HOST', default='127.0.0.1'), 6379)],
+        },
+    },
+}
