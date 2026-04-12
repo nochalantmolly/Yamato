@@ -7,10 +7,12 @@ const WS_BASE = 'ws://10.0.2.2:8000'; // Android emulator; use ws://localhost:80
 export function useWebSocket(path: string | null, onMessage: (data: any) => void) {
   const ws = useRef<WebSocket | null>(null);
   const onMessageRef = useRef(onMessage);
+  const reconnectTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const unmounted = useRef(false);
   onMessageRef.current = onMessage;
 
   const connect = useCallback(async () => {
-    if (!path) return;
+    if (!path || unmounted.current) return;
     ws.current?.close();
     const token = await AsyncStorage.getItem('access_token');
     const url = `${WS_BASE}${path}${token ? `?token=${token}` : ''}`;
@@ -24,18 +26,25 @@ export function useWebSocket(path: string | null, onMessage: (data: any) => void
     };
 
     socket.onclose = () => {
-      setTimeout(connect, 3000);
+      if (!unmounted.current) {
+        reconnectTimer.current = setTimeout(connect, 3000);
+      }
     };
 
     ws.current = socket;
   }, [path]);
 
   useEffect(() => {
+    unmounted.current = false;
     connect();
     const sub = AppState.addEventListener('change', state => {
       if (state === 'active') connect();
     });
     return () => {
+      unmounted.current = true;
+      if (reconnectTimer.current !== null) {
+        clearTimeout(reconnectTimer.current);
+      }
       sub.remove();
       ws.current?.close();
     };

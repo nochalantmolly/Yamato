@@ -1,5 +1,6 @@
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
+from django.db.models import F
 from rest_framework import generics, permissions, serializers as drf_serializers, status
 from rest_framework.response import Response
 from .models import CartItem
@@ -40,17 +41,21 @@ class CartItemListView(generics.CreateAPIView):
         menu_item_id = request.data.get('menu_item')
         existing = CartItem.objects.filter(session_id=session_id, menu_item_id=menu_item_id).first()
         if existing:
-            existing.quantity += int(request.data.get('quantity', 1))
-            existing.save()
+            CartItem.objects.filter(pk=existing.pk).update(
+                quantity=F('quantity') + int(request.data.get('quantity', 1))
+            )
+            existing.refresh_from_db()
             broadcast_cart_updated(session_id)
             return Response(CartItemSerializer(existing).data, status=status.HTTP_200_OK)
         return super().create(request, *args, **kwargs)
 
 
 class CartItemDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = CartItem.objects.all()
     serializer_class = CartItemSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return CartItem.objects.all()
 
     def perform_update(self, serializer):
         instance = serializer.save()

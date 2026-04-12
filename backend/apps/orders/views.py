@@ -100,11 +100,19 @@ class CheckoutView(APIView):
         if order.status != 'completed':
             return Response({'detail': 'Order must be completed before checkout.'}, status=400)
 
+        # Prevent checkout if other orders for this session are still pending/preparing
+        session = order.session
+        blocking = Order.objects.filter(session=session).exclude(pk=order.pk).exclude(status__in=('completed', 'paid'))
+        if blocking.exists():
+            return Response(
+                {'detail': 'All orders for this session must be completed before checkout.'},
+                status=400,
+            )
+
         order.status = 'paid'
         order.paid_at = timezone.now()
         order.save()
 
-        session = order.session
         session.status = 'closed'
         session.closed_at = timezone.now()
         session.save()

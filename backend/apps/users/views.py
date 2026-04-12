@@ -1,6 +1,12 @@
 from rest_framework import generics, permissions
+from rest_framework.response import Response
 from .models import User
 from .serializers import RegisterSerializer, UserSerializer
+
+
+class IsAdmin(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return request.user.is_authenticated and request.user.role == 'admin'
 
 
 class RegisterView(generics.CreateAPIView):
@@ -18,9 +24,7 @@ class ProfileView(generics.RetrieveUpdateAPIView):
 
 class AdminUserListView(generics.ListAPIView):
     serializer_class = UserSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAdmin]
 
     def get_queryset(self):
-        if self.request.user.role != 'admin':
-            return User.objects.none()
         return User.objects.all().order_by('role', 'name')

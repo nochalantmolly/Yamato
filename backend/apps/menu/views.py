@@ -1,5 +1,6 @@
 from rest_framework import generics, permissions
 from rest_framework.decorators import api_view, permission_classes
+from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from .models import Category, MenuItem
 from .serializers import CategorySerializer, MenuItemSerializer
@@ -39,7 +40,7 @@ class MenuItemDetailView(generics.RetrieveUpdateDestroyAPIView):
 def toggle_item_availability(request, pk):
     if request.user.role != 'admin':
         return Response({'detail': 'Admin only.'}, status=403)
-    item = MenuItem.objects.get(pk=pk)
+    item = get_object_or_404(MenuItem, pk=pk)
     item.is_available = not item.is_available
     item.save()
     return Response(MenuItemSerializer(item).data)

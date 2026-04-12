@@ -75,10 +75,12 @@ class StaffOrderConsumer(AsyncWebsocketConsumer):
             await self.close()
             return
         await self.channel_layer.group_add(self.GROUP_NAME, self.channel_name)
+        self._joined_staff_group = True
         await self.accept()
 
     async def disconnect(self, close_code):
-        await self.channel_layer.group_discard(self.GROUP_NAME, self.channel_name)
+        if hasattr(self, '_joined_staff_group'):
+            await self.channel_layer.group_discard(self.GROUP_NAME, self.channel_name)
 
     # Called by channel_layer.group_send with type='order.created'
     async def order_created(self, event):
