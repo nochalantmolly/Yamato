@@ -14,3 +14,13 @@ class ProfileView(generics.RetrieveUpdateAPIView):
 
     def get_object(self):
         return self.request.user
+
+
+class AdminUserListView(generics.ListAPIView):
+    serializer_class = UserSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        if self.request.user.role != 'admin':
+            return User.objects.none()
+        return User.objects.all().order_by('role', 'name')
