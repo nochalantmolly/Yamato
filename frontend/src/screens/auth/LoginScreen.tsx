@@ -7,6 +7,7 @@ export default function LoginScreen({navigation}: any) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -27,7 +28,12 @@ export default function LoginScreen({navigation}: any) {
     <View style={styles.container}>
       <Text style={styles.title}>Yamato</Text>
       <TextInput style={styles.input} placeholder="Email" autoCapitalize="none" keyboardType="email-address" value={email} onChangeText={setEmail} />
-      <TextInput style={styles.input} placeholder="Password" secureTextEntry value={password} onChangeText={setPassword} />
+      <View style={styles.passwordContainer}>
+        <TextInput style={styles.passwordInput} placeholder="Password" secureTextEntry={!showPassword} value={password} onChangeText={setPassword} />
+        <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeButton}>
+          <Text style={styles.eyeText}>{showPassword ? 'Hide' : 'Show'}</Text>
+        </TouchableOpacity>
+      </View>
       <TouchableOpacity style={styles.button} onPress={handleLogin} disabled={loading}>
         <Text style={styles.buttonText}>{loading ? 'Signing in...' : 'Sign In'}</Text>
       </TouchableOpacity>
@@ -42,6 +48,10 @@ const styles = StyleSheet.create({
   container: {flex: 1, justifyContent: 'center', padding: 24},
   title: {fontSize: 32, fontWeight: 'bold', textAlign: 'center', marginBottom: 32},
   input: {borderWidth: 1, borderColor: '#ccc', borderRadius: 8, padding: 12, marginBottom: 12},
+  passwordContainer: {flexDirection: 'row', borderWidth: 1, borderColor: '#ccc', borderRadius: 8, marginBottom: 12, alignItems: 'center'},
+  passwordInput: {flex: 1, padding: 12},
+  eyeButton: {paddingHorizontal: 12},
+  eyeText: {color: '#888', fontWeight: '600'},
   button: {backgroundColor: '#E84545', padding: 14, borderRadius: 8, alignItems: 'center'},
   buttonText: {color: '#fff', fontWeight: 'bold', fontSize: 16},
   link: {textAlign: 'center', marginTop: 16, color: '#666'},
