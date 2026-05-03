@@ -1,12 +1,13 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState, useCallback} from 'react';
 import {View, Text, FlatList, TouchableOpacity, StyleSheet, Alert, Switch} from 'react-native';
+import {useFocusEffect} from '@react-navigation/native';
 import {listItems, deleteItem, toggleItem} from 'src/api/menu';
 
 export default function MenuManagementScreen({navigation}: any) {
   const [items, setItems] = useState<any[]>([]);
 
   const load = () => listItems().then(res => setItems(res.data));
-  useEffect(() => { load(); }, []);
+  useFocusEffect(useCallback(() => { load(); }, []));
 
   const handleDelete = (id: number, name: string) => {
     Alert.alert('Delete', `Delete "${name}"?`, [
@@ -24,10 +25,10 @@ export default function MenuManagementScreen({navigation}: any) {
         refreshing={false}
         renderItem={({item}) => (
           <View style={styles.row}>
-            <View style={styles.info}>
+            <TouchableOpacity style={styles.info} onPress={() => navigation.navigate('MenuItemForm', {itemId: item.id})}>
               <Text style={styles.name}>{item.name}</Text>
               <Text style={styles.price}>${item.price}</Text>
-            </View>
+            </TouchableOpacity>
             <Switch value={item.is_available} onValueChange={async () => { await toggleItem(item.id); load(); }} />
             <TouchableOpacity onPress={() => handleDelete(item.id, item.name)} style={styles.del}>
               <Text style={styles.delText}>Delete</Text>
@@ -35,9 +36,14 @@ export default function MenuManagementScreen({navigation}: any) {
           </View>
         )}
       />
-      <TouchableOpacity style={styles.addBtn} onPress={() => navigation.navigate('CategoryManagement')}>
-        <Text style={styles.addBtnText}>Manage Categories</Text>
-      </TouchableOpacity>
+      <View style={styles.btnRow}>
+        <TouchableOpacity style={styles.primaryBtn} onPress={() => navigation.navigate('MenuItemForm')}>
+          <Text style={styles.btnText}>Add Item</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.secondaryBtn} onPress={() => navigation.navigate('CategoryManagement')}>
+          <Text style={styles.btnText}>Categories</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -50,6 +56,8 @@ const styles = StyleSheet.create({
   price: {color: '#888', fontSize: 13},
   del: {marginLeft: 12},
   delText: {color: '#E84545'},
-  addBtn: {margin: 16, backgroundColor: '#4A90E2', padding: 14, borderRadius: 8, alignItems: 'center'},
-  addBtnText: {color: '#fff', fontWeight: 'bold'},
+  btnRow: {flexDirection: 'row', margin: 16, gap: 12},
+  primaryBtn: {flex: 1, backgroundColor: '#E84545', padding: 14, borderRadius: 8, alignItems: 'center'},
+  secondaryBtn: {flex: 1, backgroundColor: '#4A90E2', padding: 14, borderRadius: 8, alignItems: 'center'},
+  btnText: {color: '#fff', fontWeight: 'bold'},
 });

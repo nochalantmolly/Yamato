@@ -13,6 +13,12 @@ class CategoryListView(generics.ListCreateAPIView):
     permission_classes = [IsAdminOrReadOnly]
 
 
+class CategoryDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    permission_classes = [IsAdminOrReadOnly]
+
+
 class MenuItemListView(generics.ListCreateAPIView):
     serializer_class = MenuItemSerializer
     permission_classes = [IsAdminOrReadOnly]
@@ -26,6 +32,9 @@ class MenuItemListView(generics.ListCreateAPIView):
             qs = qs.filter(is_available=True)
         if category_id:
             qs = qs.filter(category_id=category_id)
+        search = self.request.query_params.get('search')
+        if search:
+            qs = qs.filter(name__icontains=search)
         return qs
 
 
