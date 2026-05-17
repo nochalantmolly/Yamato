@@ -1,10 +1,8 @@
 import {useEffect, useRef, useCallback} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {AppState, Platform} from 'react-native';
+import {AppState} from 'react-native';
 
-const WS_BASE = Platform.OS === 'ios'
-  ? 'ws://localhost:8000'
-  : 'ws://10.0.2.2:8000';
+const WS_BASE = 'wss://molly-app.occachildcare.ca';
 
 export function useWebSocket(path: string | null, onMessage: (data: any) => void) {
   const ws = useRef<WebSocket | null>(null);

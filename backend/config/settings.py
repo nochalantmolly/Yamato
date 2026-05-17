@@ -114,6 +114,7 @@ CORS_ALLOWED_ORIGINS = config(
     default='http://localhost:8081',
     cast=lambda v: [s.strip() for s in v.split(',')],
 )
+CORS_ALLOW_ALL_ORIGINS = config('CORS_ALLOW_ALL_ORIGINS', default=False, cast=bool)
 
 # Channels
 ASGI_APPLICATION = 'config.asgi.application'
