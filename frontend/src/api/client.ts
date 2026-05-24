@@ -1,7 +1,8 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {API_BASE_URL} from 'src/config';
 
-const BASE_URL = 'https://molly-app.occachildcare.ca/api';
+const BASE_URL = API_BASE_URL;
 
 const client = axios.create({
   baseURL: BASE_URL,
