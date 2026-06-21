@@ -38,7 +38,12 @@ export default function CartScreen({navigation}: any) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Table {tableNumber} — Cart</Text>
+      <View style={styles.topBar}>
+        <Text style={styles.header}>Table {tableNumber} — Cart</Text>
+        <TouchableOpacity style={styles.statusBtn} onPress={() => navigation.navigate('OrderStatus')}>
+          <Text style={styles.statusBtnText}>Order Status</Text>
+        </TouchableOpacity>
+      </View>
       {cartItems.length === 0 ? (
         <View style={styles.empty}>
           <Text style={styles.emptyText}>Your cart is empty</Text>
@@ -70,7 +75,10 @@ export default function CartScreen({navigation}: any) {
 
 const styles = StyleSheet.create({
   container: {flex: 1, backgroundColor: '#fff'},
-  header: {fontSize: 18, fontWeight: 'bold', padding: 16, borderBottomWidth: 1, borderColor: '#eee'},
+  topBar: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 16, borderBottomWidth: 1, borderColor: '#eee'},
+  header: {fontSize: 18, fontWeight: 'bold'},
+  statusBtn: {backgroundColor: '#8B0000', paddingVertical: 6, paddingHorizontal: 12, borderRadius: 6},
+  statusBtnText: {color: '#fff', fontSize: 13, fontWeight: '600'},
   empty: {flex: 1, justifyContent: 'center', alignItems: 'center'},
   emptyText: {fontSize: 16, color: '#888', marginBottom: 12},
   link: {color: '#E84545', fontSize: 16},

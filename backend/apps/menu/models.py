@@ -22,3 +22,15 @@ class MenuItem(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class MenuItemVariant(models.Model):
+    menu_item = models.ForeignKey(MenuItem, on_delete=models.CASCADE, related_name='variants')
+    name = models.CharField(max_length=200)
+    price = models.DecimalField(max_digits=8, decimal_places=2)
+
+    class Meta:
+        ordering = ['price']
+
+    def __str__(self):
+        return f'{self.menu_item.name} - {self.name}'

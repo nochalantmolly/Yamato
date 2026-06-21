@@ -9,10 +9,18 @@ const client = axios.create({
   headers: {'Content-Type': 'application/json'},
 });
 
+// Session token for anonymous customers (set after joining table)
+let _sessionToken: string | null = null;
+export function setSessionToken(token: string | null) {
+  _sessionToken = token;
+}
+
 client.interceptors.request.use(async config => {
   const token = await AsyncStorage.getItem('access_token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
+  } else if (_sessionToken) {
+    config.headers['X-Session-Token'] = _sessionToken;
   }
   return config;
 });

@@ -1,12 +1,14 @@
 // Toggle this flag to switch between cloud and local development.
 // true  = https://molly-app.occachildcare.ca  (deployed server)
 // false = http://localhost:8000               (local Django on Mac)
-const USE_CLOUD = true;
+// Set to 'cloud', 'local', or 'lan'
+const MODE = 'lan';
 
 const CLOUD_URL = 'https://molly-app.occachildcare.ca';
-const LOCAL_URL = 'http://localhost:8000';
+const LOCAL_URL = 'http://127.0.0.1:8000';
+const LAN_URL = 'http://192.168.0.19:8000';
 
-const BASE = USE_CLOUD ? CLOUD_URL : LOCAL_URL;
+const BASE = MODE === 'cloud' ? CLOUD_URL : MODE === 'lan' ? LAN_URL : LOCAL_URL;
 
 export const API_BASE_URL = `${BASE}/api`;
-export const WS_BASE_URL = USE_CLOUD ? `wss://molly-app.occachildcare.ca` : `ws://localhost:8000`;
+export const WS_BASE_URL = MODE === 'cloud' ? `wss://molly-app.occachildcare.ca` : MODE === 'lan' ? `ws://192.168.0.19:8000` : `ws://127.0.0.1:8000`;

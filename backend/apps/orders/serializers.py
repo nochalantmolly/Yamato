@@ -3,11 +3,16 @@ from .models import Order, OrderItem
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
-    item_name = serializers.CharField(source='menu_item.name', read_only=True)
+    item_name = serializers.SerializerMethodField()
 
     class Meta:
         model = OrderItem
-        fields = ['id', 'menu_item', 'item_name', 'quantity', 'price']
+        fields = ['id', 'menu_item', 'variant', 'item_name', 'quantity', 'price']
+
+    def get_item_name(self, obj):
+        if obj.variant:
+            return f'{obj.menu_item.name} - {obj.variant.name}'
+        return obj.menu_item.name
 
 
 class OrderSerializer(serializers.ModelSerializer):
@@ -16,5 +21,5 @@ class OrderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Order
-        fields = ['id', 'session', 'table_number', 'total_amount', 'status', 'created_at', 'paid_at', 'orderitems']
-        read_only_fields = ['id', 'total_amount', 'status', 'created_at', 'paid_at', 'table_number', 'orderitems']
+        fields = ['id', 'session', 'table_number', 'total_amount', 'status', 'created_at', 'completed_at', 'paid_at', 'orderitems']
+        read_only_fields = ['id', 'total_amount', 'status', 'created_at', 'completed_at', 'paid_at', 'table_number', 'orderitems']

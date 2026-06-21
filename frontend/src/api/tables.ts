@@ -1,7 +1,12 @@
 import client from './client';
 
 export const listTables = () => client.get('/tables/');
-export const activateTable = (tableId: number) =>
-  client.post(`/tables/${tableId}/activate/`);
-export const joinTable = (joinCode: string) =>
-  client.post('/tables/join/', {join_code: joinCode});
+export const getTableCodes = () => client.get('/tables/codes/');
+export const joinTable = (code: string) =>
+  client.post('/tables/join/', {code});
+export const closeTable = (tableId: number) =>
+  client.post(`/tables/${tableId}/close/`);
+export const regenerateCode = (tableId: number) =>
+  client.post(`/tables/${tableId}/regenerate-code/`);
+export const toggleTableStatus = (tableId: number) =>
+  client.post(`/tables/${tableId}/toggle-status/`);
