@@ -3,6 +3,7 @@ import {View, SectionList, TouchableOpacity, Text, TextInput, StyleSheet, Activi
 import {listCategories, listItems} from 'src/api/menu';
 import {addCartItem} from 'src/api/cart';
 import {useTable} from 'src/context/TableContext';
+import {useCart} from 'src/hooks/useCart';
 
 interface Variant {
   id: number;
@@ -31,6 +32,8 @@ interface Section {
 
 export default function MenuScreen({navigation}: any) {
   const {sessionId} = useTable();
+  const {cartItems} = useCart();
+  const cartCount = cartItems.reduce((sum, i) => sum + i.quantity, 0);
   const [sections, setSections] = useState<Section[]>([]);
   const [allSections, setAllSections] = useState<Section[]>([]);
   const [search, setSearch] = useState('');
@@ -126,6 +129,14 @@ export default function MenuScreen({navigation}: any) {
       <View style={styles.header}>
         <Text style={styles.headerTitle}>YAMATO</Text>
         <Text style={styles.headerSubtitle}>Menu</Text>
+        <TouchableOpacity style={styles.cartIcon} onPress={() => navigation.navigate('Cart')}>
+          <Text style={styles.cartIconText}>Cart</Text>
+          {cartCount > 0 && (
+            <View style={styles.cartBadge}>
+              <Text style={styles.cartBadgeText}>{cartCount}</Text>
+            </View>
+          )}
+        </TouchableOpacity>
       </View>
 
       {/* Search */}
@@ -234,7 +245,11 @@ export default function MenuScreen({navigation}: any) {
 
 const styles = StyleSheet.create({
   container: {flex: 1, backgroundColor: '#FFF9F0'},
-  header: {alignItems: 'center', paddingTop: 16, paddingBottom: 12, borderBottomWidth: 2, borderColor: '#8B0000'},
+  header: {alignItems: 'center', paddingTop: 16, paddingBottom: 12, borderBottomWidth: 2, borderColor: '#8B0000', position: 'relative'},
+  cartIcon: {position: 'absolute', right: 16, top: 16, flexDirection: 'row', alignItems: 'center', backgroundColor: '#8B0000', paddingVertical: 6, paddingHorizontal: 12, borderRadius: 16},
+  cartIconText: {color: '#fff', fontSize: 13, fontWeight: '700'},
+  cartBadge: {backgroundColor: '#fff', borderRadius: 10, minWidth: 20, height: 20, justifyContent: 'center', alignItems: 'center', marginLeft: 6},
+  cartBadgeText: {color: '#8B0000', fontSize: 12, fontWeight: '800'},
   headerTitle: {fontSize: 28, fontWeight: '800', color: '#8B0000', letterSpacing: 4},
   headerSubtitle: {fontSize: 14, color: '#666', marginTop: 2, letterSpacing: 2},
   searchInput: {margin: 12, borderWidth: 1, borderColor: '#ddd', borderRadius: 8, padding: 10, fontSize: 15, backgroundColor: '#fff'},
