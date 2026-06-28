@@ -2,6 +2,7 @@ from django.utils import timezone
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from apps.cart.models import CartItem
 from .models import Table, TableSession
 from .serializers import TableSerializer, TableSessionSerializer
 
@@ -74,12 +75,17 @@ class JoinTableView(APIView):
         except Table.DoesNotExist:
             return Response({'detail': 'Invalid or expired table code.'}, status=404)
 
-        # Check for existing active session for this table
-        session = TableSession.objects.filter(table=table, status='active').first()
-        if not session:
-            session = TableSession.objects.create(table=table)
-            table.status = 'occupied'
-            table.save(update_fields=['status'])
+        # Close any old sessions and start fresh
+        old_sessions = TableSession.objects.filter(table=table, status='active')
+        for old in old_sessions:
+            CartItem.objects.filter(session=old).delete()
+            old.status = 'closed'
+            old.closed_at = timezone.now()
+            old.save()
+
+        session = TableSession.objects.create(table=table)
+        table.status = 'occupied'
+        table.save(update_fields=['status'])
 
         return Response({
             'session_id': session.id,
@@ -102,9 +108,10 @@ class ToggleTableStatusView(APIView):
             table.status = 'occupied'
             table.save(update_fields=['status'])
         else:
-            # Close any active session first
+            # Close any active session first and clear cart
             session = TableSession.objects.filter(table=table, status='active').first()
             if session:
+                CartItem.objects.filter(session=session).delete()
                 session.status = 'closed'
                 session.closed_at = timezone.now()
                 session.save()
@@ -128,6 +135,7 @@ class CloseTableView(APIView):
         if not session:
             return Response({'detail': 'No active session for this table.'}, status=400)
 
+        CartItem.objects.filter(session=session).delete()
         session.status = 'closed'
         session.closed_at = timezone.now()
         session.save()
