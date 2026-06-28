@@ -2,7 +2,7 @@
 // true  = https://molly-app.occachildcare.ca  (deployed server)
 // false = http://localhost:8000               (local Django on Mac)
 // Set to 'cloud', 'local', or 'lan'
-const MODE = 'lan';
+const MODE = 'cloud';
 
 const CLOUD_URL = 'https://molly-app.occachildcare.ca';
 const LOCAL_URL = 'http://127.0.0.1:8000';

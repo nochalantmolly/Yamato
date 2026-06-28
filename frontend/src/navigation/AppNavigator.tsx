@@ -86,7 +86,7 @@ export default function AppNavigator() {
         <Stack.Screen name="RoleSelection">
           {() => (
             <RoleSelectionScreen
-              onEnter={() => setMode('login_choice')}
+              onEnter={() => setMode('customer')}
             />
           )}
         </Stack.Screen>
